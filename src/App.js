@@ -28,7 +28,7 @@ UpdateBook=(book,shelf)=>{
   //select_box.selectedIndex = currIndex;
   //var currIndex = document.getElementById("ddList").selectedIndex;
   //alert("CurrentIndex"+currIndex)
-    console.log("Shelf Selected is:"+shelf)
+    //console.log("Shelf Selected is:"+shelf)
     BooksAPI.update(book,shelf).then((newbook)=>{     
       this.getAllBooks()
       //alert("Success!")
