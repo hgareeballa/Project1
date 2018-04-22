@@ -17,47 +17,50 @@ class BooksApp extends React.Component {
     showSearchPage: false,
     books:[],
     results:[],
-    query:''
+    query:'',
+    notfoundtxt:false
+
   }
 
-UpdateBook=(book,shelf)=>{      
-  //var currIndex = document.getElementById("ddList").selectedIndex;
-  //document.getElementById("ddList").selectedIndex = -1;
-  //alert("Selected Index = " + currIndex);
- // var select_box = document.getElementById("ddList");
-  //select_box.selectedIndex = currIndex;
-  //var currIndex = document.getElementById("ddList").selectedIndex;
-  //alert("CurrentIndex"+currIndex)
-    //console.log("Shelf Selected is:"+shelf)
-    BooksAPI.update(book,shelf).then((newbook)=>{     
-      this.getAllBooks()
-      //alert("Success!")
-    })
-    //event.preventDefault();
+UpdateBook=(book,shelf)=>{   
+  this.state.books.forEach(function(bk) {
+    if (bk.id === book.id) {        
+      bk.shelf=shelf
+    }//if      
+  });    
+  this.setState(()=>({
+  books:this.state.books
+  }))
+  BooksAPI.update(book,shelf).then((newbook)=>{     
+      //this.getAllBooks()              
+  })    
+        
 }// update book
 
-showSearchPageF=()=>{
-this.setState({ 
-    showSearchPage :!this.state.showSearchPage
-})
-//alert(this.state.showSearchPage)
-}//showme
-
-updateQuery = (query) => {  
-  this.setState(() => ({results: []}))        
-  console.log("Searching For:"+query)             
+updateQuery = (query) => {    
   this.setState(()=>({
-    query:query
+    query:query,
+    results:[]
   }))
-  
   if (query!=="") {
     BooksAPI.search(query)
     .then((books) => {      
       this.setState(() => ({
         results:books
       }))
-    })    
-  }else{this.setState(() => ({results: []}))}//if Statment     
+    if (books.length>0){
+      this.setState(()=>({        
+        notfoundtxt:false
+      }))      
+    }//if
+    else{
+      this.setState(()=>({        
+        notfoundtxt:true
+      }))    
+    }//else
+
+    })    //then
+  }else{this.setState(() => ({results: [],notfoundtxt:false}))}//if Statment     
 }    // update quer
 
 getAllBooks=()=>{    
@@ -73,25 +76,41 @@ componentDidMount() {
 this.getAllBooks()  
 }//comdid mount
 
-render() {      
+getshelf=(books)=>{
+  var x = 'none'
+  if (books.shelf) {
+    x=books.shelf    
+  }else{    
+    this.state.books.forEach(function(bk) {
+      if (bk.id === books.id) {        
+        x=bk.shelf
+      }//if      
+    });        
+  }
+  //console.log("XX"+x)
+  return x
+}//return value for the select list
+
+render() {    
     return (
       <div> 
       <div className="app">     
       <Route exact path='/' render={() => (
         <Booklist 
-        books={this.state.books} 
-        showSpage={this.showSearchPageF}
-        UpdateBook={this.UpdateBook}
+        books={this.state.books}         
+        UpdateBook={this.UpdateBook}        
+        getshelf={this.getshelf}
         />
       )} />
       <Route path='/search' render={({ history }) => (
         <Searchpage         
         books={this.state.results} 
-        query={this.state.query} 
-        hideSpage={this.showSearchPageF}
+        query={this.state.query}         
         UpdateBook={this.UpdateBook}
         updateQuery={this.updateQuery}
-        /> 
+        getshelf={this.getshelf}
+        notfoundtxt={this.state.notfoundtxt}
+        />         
       )} />
       
       </div>

@@ -1,12 +1,9 @@
 import React, { Component } from 'react';
 
-class Bookcom extends Component { 
+class Bookcom extends Component {
   render() {        
-        let books = this.props.books          
-        //books.imageLinks.smallThumbnail   
-        //(event)=>UpdateBook(books,event.target.value)
-        const { UpdateBook} = this.props    
-        
+        let books = this.props.books                          
+        const { UpdateBook} = this.props            
         return (                      
             <ol className="books-grid">                                    
                     {(books.length > 0)? 
@@ -21,7 +18,7 @@ class Bookcom extends Component {
                                 }}>
                                 </div>
                               <div className="book-shelf-changer">
-                                <select value={this.props.dvalue} id="ddList" onChange={(event)=>UpdateBook(books,event.target.value)}>
+                                <select value={this.props.getshelf(books)} id="ddList" onChange={(event)=>UpdateBook(books,event.target.value)}>
                                   <option  disabled>Move to...</option>
                                   <option value="currentlyReading">Currently Reading</option>
                                   <option value="wantToRead">Want to Read</option>
@@ -31,7 +28,7 @@ class Bookcom extends Component {
                               </div>
                             </div>
                             <div className="book-title">{books.title}</div>
-                            <div className="book-authors">{books.authors}</div>                          
+                            <div className="book-authors">{books.authors}</div>                                                                                                           
                           </div>
                         </li>
                       ))
