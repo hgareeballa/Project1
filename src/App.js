@@ -21,20 +21,25 @@ class BooksApp extends React.Component {
     notfoundtxt:false
 
   }
-
 UpdateBook=(book,shelf)=>{   
-  this.state.books.forEach(function(bk) {
+ /* this.state.books.forEach(function(bk){
     if (bk.id === book.id) {        
       bk.shelf=shelf
     }//if      
-  });    
+  });
+  */
+ this.state.books.filter(bk => bk.id===book.id).map((x)=>{
+  x.shelf=shelf
+ return true  
+ })//
+
   this.setState(()=>({
   books:this.state.books
   }))
-  BooksAPI.update(book,shelf).then((newbook)=>{     
-      //this.getAllBooks()              
-  })    
-        
+  BooksAPI.update(book,shelf)
+  .then((newbook)=>{      
+      //console.log("Update Done !"+book.id)             
+  })            
 }// update book
 
 updateQuery = (query) => {    
