@@ -15,110 +15,140 @@ class BooksApp extends React.Component {
      * pages, as well as provide a good URL they can bookmark and share.
      */
     showSearchPage: false,
-    books:[],
-    results:[],
-    query:'',
-    notfoundtxt:false
+    books: [],
+    results: [],
+    query: '',
+    notfoundtxt: false
 
   }
-UpdateBook=(book,shelf)=>{   
- /* this.state.books.forEach(function(bk){
-    if (bk.id === book.id) {        
-      bk.shelf=shelf
-    }//if      
-  });
-  */
- this.state.books.filter(bk => bk.id===book.id).map((x)=>{
-  x.shelf=shelf
- return true  
- })//
 
-  this.setState(()=>({
-  books:this.state.books
-  }))
-  BooksAPI.update(book,shelf)
-  .then((newbook)=>{      
-      //console.log("Update Done !"+book.id)             
-  })            
-}// update book
+  UpdateBook = (book, shelf) => {
+    let books = this.state.books
+    let results = this.state.results
+    let itemindex = books.indexOf(book)
+    if (itemindex !== -1) {
+      books[itemindex].shelf = shelf
+      console.log("book Found in ->BOOKS[]:")
+    } else {
+      console.log("book NOT Found in ->BOOKS[]:")
+      books.push(book)
+      results.filter(bk => bk.id === book.id).map((x) => {
+        x.shelf = shelf
+        console.log("book Found in ->results[]:" + x.id)
+        return true
+      })//  
+    }//
+    this.setState(() => ({
+      books: books,
+      results: results
+    }))
+    BooksAPI.update(book, shelf)
+      .then((newbook) => {
+        console.log("Update Done !" + book.id)
+      })
+  }// update book    
+  UpdateBook_old = (book, shelf) => {
+    let bkresults = this.state.books.filter(bk => bk.id === book.id).map((x) => {
+      x.shelf = shelf
+      console.log("book Found in ->Books[]:" + x.id)
+      return x
+    })//
+    if (bkresults.length === 0) {
+      this.state.books.push(book)
+      console.log("book NOT Found in ->Books[]:" + book.id)
+    }
+    this.state.results.filter(bk => bk.id === book.id).map((x) => {
+      x.shelf = shelf
+      console.log("book Found in ->results[]:" + x.id)
+      return true
+    })//
+    this.setState(() => ({
+      books: this.state.books,
+      results: this.state.results
+    }))
+    BooksAPI.update(book, shelf)
+      .then((newbook) => {
+        console.log("Update Done !" + book.id)
+      })
+  }// update book
 
-updateQuery = (query) => {    
-  this.setState(()=>({
-    query:query,
-    results:[]
-  }))
-  if (query!=="") {
-    BooksAPI.search(query)
-    .then((books) => {      
-      this.setState(() => ({
-        results:books
-      }))
-    if (books.length>0){
-      this.setState(()=>({        
-        notfoundtxt:false
-      }))      
-    }//if
-    else{
-      this.setState(()=>({        
-        notfoundtxt:true
-      }))    
-    }//else
+  updateQuery = (query) => {
+    this.setState(() => ({
+      query: query,
+      results: []
+    }))
+    if (query !== "") {
+      BooksAPI.search(query)
+        .then((books) => {
+          this.setState(() => ({
+            results: books
+          }))
+          if (books.length > 0) {
+            this.setState(() => ({
+              notfoundtxt: false
+            }))
+          }//if
+          else {
+            this.setState(() => ({
+              notfoundtxt: true
+            }))
+          }//else
 
-    })    //then
-  }else{this.setState(() => ({results: [],notfoundtxt:false}))}//if Statment     
-}    // update quer
+        })    //then
+    } else { this.setState(() => ({ results: [], notfoundtxt: false })) }//if Statment     
+  }    // update quer
 
-getAllBooks=()=>{    
-  BooksAPI.getAll()
+  getAllBooks = () => {
+    BooksAPI.getAll()
       .then((books) => {
         this.setState(() => ({
           books
         }))
-      })      
-}//getall boos
+        //console.log("Done:getAllBooks")
+      })
+  }//getall boos
 
-componentDidMount() {  
-this.getAllBooks()  
-}//comdid mount
+  componentDidMount() {
+    this.getAllBooks()
+  }//comdid mount
 
-getshelf=(books)=>{
-  var x = 'none'
-  if (books.shelf) {
-    x=books.shelf    
-  }else{    
-    this.state.books.forEach(function(bk) {
-      if (bk.id === books.id) {        
-        x=bk.shelf
-      }//if      
-    });        
-  }
-  //console.log("XX"+x)
-  return x
-}//return value for the select list
+  getshelf = (books) => {
+    var x = 'none'
+    if (books.shelf) {
+      x = books.shelf
+    } else {
+      this.state.books.forEach(function (bk) {
+        if (bk.id === books.id) {
+          x = bk.shelf
+        }//if      
+      });
+    }
+    //console.log("XX"+x)
+    return x
+  }//return value for the select list
 
-render() {    
+  render() {
     return (
-      <div> 
-      <div className="app">     
-      <Route exact path='/' render={() => (
-        <Booklist 
-        books={this.state.books}         
-        UpdateBook={this.UpdateBook}        
-        getshelf={this.getshelf}
-        />
-      )} />
-      <Route path='/search' render={({ history }) => (
-        <Searchpage         
-        books={this.state.results} 
-        query={this.state.query}         
-        UpdateBook={this.UpdateBook}
-        updateQuery={this.updateQuery}
-        getshelf={this.getshelf}
-        notfoundtxt={this.state.notfoundtxt}
-        />         
-      )} />
-      
-      </div>
+      <div>
+        <div className="app">
+          <Route exact path='/' render={() => (
+            <Booklist
+              books={this.state.books}
+              UpdateBook={this.UpdateBook}
+              getshelf={this.getshelf}
+            />
+          )} />
+          <Route path='/search' render={({ history }) => (
+            <Searchpage
+              books={this.state.results}
+              query={this.state.query}
+              UpdateBook={this.UpdateBook}
+              updateQuery={this.updateQuery}
+              getshelf={this.getshelf}
+              notfoundtxt={this.state.notfoundtxt}
+            />
+          )} />
+        </div>
       </div>
     )
   }
