@@ -29,7 +29,7 @@ class Bookcom extends Component {
                     </div>
                   </div>
                   <div className="book-title">{books.title}</div>
-                  <div className="book-authors">{books.authors}</div>
+                  <div className="book-authors">{books.authors}</div>                  
                 </div>
               </li>
             ))

@@ -18,28 +18,26 @@ class BooksApp extends React.Component {
     books: [],
     results: [],
     query: '',
-    notfoundtxt: false
-  }
+    notfoundtxt: false,
+    loadingtxt: false
+  }//state
   UpdateBook = (book, shelf) => {
     let books = this.state.books
-    let results = this.state.results   
-    const itemindex = books.findIndex(bo => bo.id === book.id) 
-       
+    let results = this.state.results
+    const itemindex = books.findIndex(bo => bo.id === book.id)
     if (itemindex !== -1) {
-      console.log(book.id+"::INDEX in BOOKS::"+itemindex); 
+      console.log("Book Found in Books!");
       books[itemindex].shelf = shelf
-      console.log("book Found in ->BOOKS[]:")
     } else {
-      console.log("book NOT Found in ->BOOKS[]:")
+      console.log("Book Found in Results!.");
       books.push(book)
       const itemindex = results.findIndex(bo => bo.id === book.id)
       results[itemindex].shelf = shelf
-      console.log("book Found in ->results[]:" + itemindex)    
-    }//
+    }//if
     this.setState(() => ({
       books: books,
       results: results
-    }))
+    }))//update status
     BooksAPI.update(book, shelf)
       .then((newbook) => {
         console.log("Update Done !" + book.id)
@@ -68,7 +66,7 @@ class BooksApp extends React.Component {
       .then((newbook) => {
         console.log("Update Done !" + book.id)
       })
-  }// update book old - not used !
+  }// update book
 
   updateQuery = (query) => {
     this.setState(() => ({
@@ -76,20 +74,17 @@ class BooksApp extends React.Component {
       results: []
     }))
     if (query !== "") {
+      this.setState(() => ({notfoundtxt: false}))
+      this.setState(() => ({loadingtxt: true}))
       BooksAPI.search(query)
         .then((books) => {
-          this.setState(() => ({
-            results: books
-          }))
+          this.setState(() => ({loadingtxt: false}))
+          this.setState(() => ({results: books}))
           if (books.length > 0) {
-            this.setState(() => ({
-              notfoundtxt: false
-            }))
+            this.setState(() => ({notfoundtxt: false}))
           }//if
           else {
-            this.setState(() => ({
-              notfoundtxt: true
-            }))
+            this.setState(() => ({notfoundtxt: true}))
           }//else
 
         })    //then
@@ -115,13 +110,12 @@ class BooksApp extends React.Component {
     if (books.shelf) {
       x = books.shelf
     } else {
-      this.state.books.forEach(function (bk) {
-        if (bk.id === books.id) {
-          x = bk.shelf
-        }//if      
-      });
-    }
-    //console.log("XX"+x)
+      let itemindex = this.state.books.findIndex(bo => bo.id === books.id)
+      if (itemindex !== -1) {
+        x = this.state.books[itemindex].shelf
+        //console.log(books.id + ":ITEM INDEX:" + itemindex);
+      }//if   
+    }//ifelse     
     return x
   }//return value for the select list
 
@@ -142,8 +136,9 @@ class BooksApp extends React.Component {
               query={this.state.query}
               UpdateBook={this.UpdateBook}
               updateQuery={this.updateQuery}
-              getshelf={this.getshelf}
-              notfoundtxt={this.state.notfoundtxt}
+              getshelf={this.getshelf}        
+              loadingtxt={this.state.loadingtxt}
+              notfoundtxt={this.state.notfoundtxt}      
             />
           )} />
         </div>

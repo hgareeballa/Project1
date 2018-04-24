@@ -15,7 +15,7 @@ class Booklist extends Component {
         <div className="app">
           <div className="list-books">
             <div className="list-books-title">
-              <h1>MyReads</h1>
+              <h1>MyReads v3</h1>
             </div>
             <div className="list-books-content">
               <div>
