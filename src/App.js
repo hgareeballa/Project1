@@ -19,24 +19,22 @@ class BooksApp extends React.Component {
     results: [],
     query: '',
     notfoundtxt: false
-
   }
-
   UpdateBook = (book, shelf) => {
     let books = this.state.books
-    let results = this.state.results
-    let itemindex = books.indexOf(book)
+    let results = this.state.results   
+    const itemindex = books.findIndex(bo => bo.id === book.id) 
+       
     if (itemindex !== -1) {
+      console.log(book.id+"::INDEX in BOOKS::"+itemindex); 
       books[itemindex].shelf = shelf
       console.log("book Found in ->BOOKS[]:")
     } else {
       console.log("book NOT Found in ->BOOKS[]:")
       books.push(book)
-      results.filter(bk => bk.id === book.id).map((x) => {
-        x.shelf = shelf
-        console.log("book Found in ->results[]:" + x.id)
-        return true
-      })//  
+      const itemindex = results.findIndex(bo => bo.id === book.id)
+      results[itemindex].shelf = shelf
+      console.log("book Found in ->results[]:" + itemindex)    
     }//
     this.setState(() => ({
       books: books,
@@ -70,7 +68,7 @@ class BooksApp extends React.Component {
       .then((newbook) => {
         console.log("Update Done !" + book.id)
       })
-  }// update book
+  }// update book old - not used !
 
   updateQuery = (query) => {
     this.setState(() => ({
